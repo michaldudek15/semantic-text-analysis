@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Lista tekstów</title>
+</head>
+<body>
+    <h1>Lista tekstów z podświetleniem</h1>
+
+    {% for text in texts %}
+        <h3>{{ text.filename }} (wynik: {{ text.score }})</h3>
+        <!-- 'safe' pozwala renderować HTML w treści -->
+        <pre>{{ text.content | safe }}</pre>
+    {% endfor %}
+</body>
+</html>
