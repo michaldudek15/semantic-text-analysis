@@ -6,18 +6,32 @@
 <h2>lista frekwencyjna</h2>
 <p>wybierz jedną z list frekwencyjnych:</p>
 
-<div style="display: flex; gap: 15px; margin-bottom: 20px;">
-    <form action="/word_lists/all">
-        <button type="submit">wszystkie teksty</button>
-    </form>
-
-    <form action="/word_lists/topic">
-        <button type="submit">teksty na temat</button>
-    </form>
-
-    <form action="/word_lists/offtopic">
-        <button type="submit">teksty nie na temat</button>
-    </form>
+<div style="display: flex; gap: 15px; margin: 20px 0;">
+    <a href="/word_lists/wszystkie" class="btn">wszystkie teksty</a>
+    <a href="/word_lists/na_temat" class="btn">teksty na temat</a>
+    <a href="/word_lists/nie_na_temat" class="btn">teksty nie na temat</a>
 </div>
+
+<style>
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4CAF50; /* zielony */
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: background-color 0.2s, transform 0.2s;
+    }
+
+    .btn:hover {
+        background-color: #45a049; /* ciemniejszy zielony */
+        transform: translateY(-2px);
+    }
+
+    .btn:active {
+        transform: translateY(0);
+    }
+</style>
 
 {% endblock %}

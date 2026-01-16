@@ -24,11 +24,11 @@ def word_lists():
 @app.route("/word_lists/<lista_typ>")
 def show_words(lista_typ):
     # Wybór pliku CSV w zależności od przycisku
-    if lista_typ == "all":
+    if lista_typ == "wszystkie":
         filename = "lista_frekwencyjna_clp_wszystkie.csv"
-    elif lista_typ == "topic":
+    elif lista_typ == "na_temat":
         filename = "lista_frekwencyjna_clp_na_temat.csv"
-    elif lista_typ == "offtopic":
+    elif lista_typ == "nie_na_temat":
         filename = "lista_frekwencyjna_clp_nie_na_temat.csv"
     else:
         return "Nieznany typ listy", 404
