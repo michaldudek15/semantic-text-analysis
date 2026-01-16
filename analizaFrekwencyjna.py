@@ -46,7 +46,7 @@ for filename in file_list:
 # formatowanie liczników do typu csv
 def save_counter_clp(counter_obj, filename):
     with open(filename, "w", encoding="utf-8") as f:
-        f.write("lp,slowo,liczba,etykieta\n")
+        f.write("lp,słowo,liczba,etykieta\n")
         for i, (word, count) in enumerate(counter_obj.most_common(), start=1):
             ids = clp.rec(word)
             etykieta = clp.label(ids[0]) if ids else "-"
