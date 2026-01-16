@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}lista frekwencyjna{% endblock %}
+
+{% block content %}
+<h2>lista frekwencyjna</h2>
+<p>wybierz jedną z list frekwencyjnych:</p>
+
+<div style="display: flex; gap: 15px; margin-bottom: 20px;">
+    <form action="/word_lists/all">
+        <button type="submit">wszystkie teksty</button>
+    </form>
+
+    <form action="/word_lists/topic">
+        <button type="submit">teksty na temat</button>
+    </form>
+
+    <form action="/word_lists/offtopic">
+        <button type="submit">teksty nie na temat</button>
+    </form>
+</div>
+
+{% endblock %}

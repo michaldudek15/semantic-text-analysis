@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}lista frekwencyjna{% endblock %}
+
+{% block content %}
+<h2>lista frekwencyjna - {{ title }}</h2>
+<a href="/word_lists">← wybierz inną listę</a>
+<table border="1" cellpadding="5" cellspacing="0" style="margin-top: 15px;">
+    <tr>
+        <th>lp</th>
+        <th>slowo</th>
+        <th>liczba</th>
+        <th>etykieta</th>
+    </tr>
+    {% for row in words %}
+    <tr>
+        <td>{{ row['lp'] }}</td>
+        <td>{{ row['słowo'] }}</td>
+        <td>{{ row['liczba'] }}</td>
+        <td>{{ row['etykieta'] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,51 +1,37 @@
-import os
-import re
 from flask import Flask, render_template
+import csv
 
 app = Flask(__name__)
 
-# Słowa, które chcemy podświetlać
-KEYWORDS = ["Breivik", "anders", "utoya"]
+# Funkcja do wczytania CSV do listy słów
+def load_csv(filename):
+    lista = []
+    with open(filename, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            lista.append(row)
+    return lista
 
 @app.route("/")
-def home():
-    texts = []
+def index():
+    return render_template("index.html")
 
-    # Numeryczne sortowanie plików
-    files = sorted(
-        os.listdir("teksty"),
-        key=lambda f: int(f.replace(".txt", ""))  # sortowanie po numerze
-    )
+@app.route("/word_lists")
+def word_lists():
+    # Strona z przyciskami do wyboru listy
+    return render_template("word_lists.html")
 
-    for file in files:
-        with open(f"teksty/{file}", encoding="utf-8") as f:
-            content = f.read()
+@app.route("/word_lists/<lista_typ>")
+def show_words(lista_typ):
+    # Wybór pliku CSV w zależności od przycisku
+    if lista_typ == "all":
+        filename = "lista_frekwencyjna_clp_wszystkie.csv"
+    elif lista_typ == "topic":
+        filename = "lista_frekwencyjna_clp_na_temat.csv"
+    elif lista_typ == "offtopic":
+        filename = "lista_frekwencyjna_clp_nie_na_temat.csv"
+    else:
+        return "Nieznany typ listy", 404
 
-        score = 0
-        highlighted_content = content  # nowy tekst z podświetleniami
-
-        for kw in KEYWORDS:
-            # regex nieczuły na wielkość liter
-            pattern = re.compile(re.escape(kw), re.IGNORECASE)
-            
-            # zliczanie wystąpień
-            matches = pattern.findall(content)
-            score += len(matches)
-
-            # podświetlanie w tekście
-            highlighted_content = pattern.sub(
-                lambda m: f"<span style='background: yellow; font-weight: bold;'>{m.group(0)}</span>",
-                highlighted_content
-            )
-
-        texts.append({
-            "filename": file,
-            "content": highlighted_content,
-            "score": score
-        })
-
-    return render_template("index.html", texts=texts)
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
+    words = load_csv(filename)
+    return render_template("words_table.html", words=words, title=lista_typ)
