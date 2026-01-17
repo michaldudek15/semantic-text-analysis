@@ -1,8 +1,44 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Lista Tekstów{% endblock %}
+{% block title %}lista tekstów{% endblock %}
 
 {% block content %}
-<h2>Lista tekstów</h2>
-<p>Tutaj w przyszłości wyświetlimy listę wszystkich tekstów.</p>
+<div class="container">
+  <h2>Lista tekstów</h2>
+
+  <!-- Przyciski sortowania -->
+  <div style="margin-bottom: 15px;">
+    <a href="/texts?sort_by=filename&sort_order={{ 'asc' if sort_by != 'filename' or sort_order == 'desc' else 'desc' }}">
+      <button>Sortuj po numerze tekstu</button>
+    </a>
+    <a href="/texts?sort_by=category_sum&sort_order={{ 'asc' if sort_by != 'category_sum' or sort_order == 'desc' else 'desc' }}">
+      <button>Sortuj po ocenie zgodności</button>
+    </a>
+  </div>
+
+  <table border="1" cellspacing="0" cellpadding="5">
+    <thead>
+      <tr>
+        <th>numer tekstu</th>
+        <th>treść</th>
+        <th>ocena zgodności</th>
+        <th>role semantyczne</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in texts %}
+      <tr>
+        <td>{{ item.filename[:-4] }}</td>
+        <td>{{ item.text|safe }}</td>
+        <td>{{ "{:.0%}".format(item.category_sum) }}</td>
+        <td>
+          {% for category in item.categories %}
+            {{ category }}<br>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}
