@@ -1,8 +1,55 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>słowa kluczowe i ich wagi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background-color: #fff;
+    }
+    th, td {
+      padding: 10px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #333;
+      color: #fff;
+    }
+    tr:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <h2>słowa kluczowe i ich wagi</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>kategoria</th>
+        <th>słowo kluczowe</th>
+        <th>waga</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background-color:#ff0000; color:#fff;"><td>Sprawca</td><td>Anders, Breivik, zamachowiec, terrorysta, oskarżony, radykał, ekstremista</td><td>0.25</td></tr>
 
-{% block title %}Wagi Ról Semantycznych{% endblock %}
+      <tr style="background-color:#f70893; color:#fff;"><td>Zdarzenie</td><td>zamach, atak, eksplozja, strzelanina, masakra, terroryzm, zastrzelić</td><td>0.2</td></tr>
 
-{% block content %}
-<h2>Wagi ról semantycznych</h2>
-<p>Tutaj w przyszłości pokażemy tabelę z wagami ról semantycznych.</p>
-{% endblock %}
+      <tr style="background-color:#8300fe; color:#fff;"><td>Obiekt</td><td>młodzież, imigrant, zabity, ofiara, uczestnik, ranny, cywil, dziecko</td><td>0.15</td></tr>
+
+      <tr style="background-color:#00a2ff; color:#fff;"><td>Narzędzie</td><td>broń, ładunek, materiał, środki, pistolet, karabin, pojazd, ciężarówka, samochód</td><td>0.1</td></tr>
+
+      <tr style="background-color:#04ff08; color:#000;"><td>Miejsce</td><td>Norwegia, Oslo, Utøya, wyspa</td><td>0.2</td></tr>
+
+      <tr style="background-color:#b7d51f; color:#000;"><td>Cel</td><td>ideologia, polityka, system, ekstremizm, manifest, przekaz, symbol, społeczeństwo, demokracja, radykalizm</td><td>0.1</td></tr>
+    </tbody>
+  </table>
+</body>
+</html>
