@@ -4,21 +4,85 @@
     <meta charset="utf-8">
     <title>{% block title %}projekt AEI{% endblock %}</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        header { background-color: #333; color: white; padding: 10px; }
-        nav { display: flex; gap: 20px; }
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 5px 10px;
-        }
-        nav a:hover { background-color: #555; border-radius: 4px; }
-        main { padding: 20px; }
+    /* Ogólne style */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+    }
+
+    header {
+        background-color: #333;
+        color: white;
+        padding: 10px;
+    }
+
+    nav {
+        display: flex;
+        gap: 20px;
+    }
+
+    nav a {
+        color: white;
+        text-decoration: none;
+        padding: 5px 10px;
+    }
+
+    nav a:hover {
+        background-color: #555;
+        border-radius: 4px;
+    }
+
+    main {
+        padding: 20px;
+    }
+
+    /* Przyciski */
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: background-color 0.2s, transform 0.2s;
+    }
+
+    .btn:hover {
+        background-color: #45a049;
+        transform: translateY(-2px);
+    }
+
+    .btn:active {
+        transform: translateY(0);
+    }
+
+    /* Tabela */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        background-color: #fff;
+    }
+
+    th, td {
+        padding: 10px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #333;
+        color: #fff;
+    }
     </style>
+
 </head>
 <body>
     <header>
-        <h1>projekt AEI</h1>
+        <h1>Automatyczna ekstrakcja informacji - projekt, Michał Dudek, 2026 r.</h1>
         <nav>
             <a href="/">STRONA STARTOWA</a>
             <a href="/texts">TEKSTY</a>
