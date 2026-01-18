@@ -142,3 +142,9 @@ def show_words(lista_typ):
         for row in reader:
             slowa.append(row)
     return render_template("words_table.html", words=slowa, title=lista_typ)
+
+if __name__ == "__main__":
+    app.run(
+        host='0.0.0.0',
+        port=12221,
+        debug=True)
