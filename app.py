@@ -5,7 +5,7 @@ from clp3 import clp as clp
 
 app = Flask(__name__)
 
-# --- Słownik kategorii ---
+# słowa kluczowe, wagi i kolory ról semantycznych
 keyword_dict = {
     'Sprawca': (['anders', 'andersa', 'andersowi', 'andersem', 'andersie', 
                 'Anders', 'Andersa', 'Andersowi', 'Andersem', 'Andersie',
@@ -33,7 +33,7 @@ keyword_dict = {
             0.1, "#b7d51f"),
 }
 
-# --- Klasy reprezentujące teksty ---
+# klasa pojedynczego tekstu
 class Text:
     def __init__(self, text, filename):
         self.text = text
@@ -41,6 +41,7 @@ class Text:
         self.categories = []
         self.category_sum = 0
 
+# klasa korpusu tekstów
 class AllTexts:
     def __init__(self, folder='teksty'):
         self.folder = folder
@@ -58,8 +59,8 @@ class AllTexts:
 
     def analyze_texts(self):
         for text_obj in self.texts:
-            # --- Zamiana interpunkcji na spacje, zostawiamy polskie znaki i cyfry ---
-            clear_text = re.sub(r'[^\w\sąćęłńóśżźĄĆĘŁŃÓŚŻŹ]', ' ', text_obj.text.lower())
+            # wszystko, co nie jest literą, spacją lub polskimi znakami diakrytycznymi lub ø (Utøya), zamieniamy na spację
+            clear_text = re.sub(r'[^\w\sąćęłńóśżźĄĆĘŁŃÓŚŻŹøØ]', ' ', text_obj.text.lower())
 
             for word in clear_text.split():
                 for key, value in keyword_dict.items():
@@ -79,7 +80,7 @@ class AllTexts:
                             text_obj.text = self.color_text(word, text_obj.text, value[2])
 
     def color_text(self, word, text, color):
-        # Podświetlenie słowa kolorem
+        # pokolorowanie słowa w tekście
         text = re.sub(
             fr'(?<!\w)({re.escape(word)})(?!\w)',
             fr'<span style="background-color: {color}; font-weight: bold;">\1</span>',
@@ -87,11 +88,10 @@ class AllTexts:
         )
         return text
 
-# --- Analiza wszystkich tekstów ---
 all_texts = AllTexts(folder='teksty')
 all_texts.run()
 
-# --- Trasy Flask ---
+# trasy Flaska
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -109,7 +109,7 @@ def texts():
     elif sort_by == 'filename':
         texts_list.sort(key=lambda x: int(x.filename[:-4]), reverse=reverse)
 
-    # Mapa kolorów kategorii do template
+    # mapa kolorów kategorii do template
     category_colors = { key: value[2] for key, value in keyword_dict.items() }
 
     return render_template(
@@ -145,7 +145,7 @@ def show_words(lista_typ):
 
     return render_template("words_table.html", words=slowa, title=lista_typ)
 
-# --- Uruchomienie serwera ---
+# uruchomienie serwera aplikacji
 if __name__ == "__main__":
     app.run(
         host='0.0.0.0',
