@@ -1,9 +1,7 @@
 from flask import Flask, render_template, request
 import os
-try:
-    from clp3 import clp as clp
-except:
-    pass
+from clp3 import clp as clp
+
 
 app = Flask(__name__)
 
@@ -69,8 +67,8 @@ class AllTexts:
                         clp_forms = clp.forms(clp.rec(word.lower())[0])
                         if clp_forms:
                             word_forms = clp_forms
-                    except:
-                        pass
+                    except Exception:
+                        word_forms = [word.lower()]
                     for word_form in word_forms:
                         if word_form in value[0] or word in value[0]:
                             if key not in text_obj.categories:
@@ -143,9 +141,7 @@ def show_words(lista_typ):
     slowa = []
     import csv
     with open(filename, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            slowa.append(row)
+        slowa = list(csv.DictReader(f))
     return render_template("words_table.html", words=slowa, title=lista_typ)
 
 if __name__ == "__main__":
