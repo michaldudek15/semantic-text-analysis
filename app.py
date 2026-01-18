@@ -8,9 +8,7 @@ app = Flask(__name__)
 # słowa kluczowe, wagi i kolory ról semantycznych
 keyword_dict = {
     'Sprawca': (['anders', 'andersa', 'andersowi', 'andersem', 'andersie', 
-                'Anders', 'Andersa', 'Andersowi', 'Andersem', 'Andersie',
                 'breivik', 'breivika', 'breivikowi', 'breivikiem', 'breiviku',
-                'Breivik', 'Breivika', 'Breivikowi', 'Breivikiem', 'Breviviku',
                 'zamachowiec', 'terrorysta', 'oskarżony', 'radykał','ekstremista'],
                 0.25, "#ff0000"),
     'Zdarzenie': (['zamach', 'atak', 'eksplozja', 'strzelanina', 'masakra', 'terroryzm', 'zastrzelić'],
@@ -20,13 +18,9 @@ keyword_dict = {
     'Narzędzie': (['broń', 'ładunek', 'materiał', 'środki', 'pistolet', 'karabin', 'pojazd', 'ciężarówka', 'samochód'],
                   0.1, "#00a2ff"),
     'Miejsce': (['norwegia', 'norwegii', 'norwegię', 'norwegią', 'norwegio',
-                 'Norwegia', 'Norwegii', 'Norwegię', 'Norwegią', 'Norwegio',
                  'oslo',
-                 'Oslo',
                  'utøya', 'utøyi', 'utøyę', 'utøyą', 'utøyo',
-                 'Utøya', 'Utøyi', 'Utøyę', 'Utøyą', 'Utøyo',
                  'utoya', 'utoyi', 'utoyę', 'utoyą', 'utoyo', 'utoi',
-                 'Utoya', 'Utoyi', 'Utoyę', 'Utoyą', 'Utoyo', 'Utoi',
                  'wyspa', 'więzienie'],
                 0.2, "#04ff08"),
     'Cel': (['ideologia', 'polityka', 'system', 'ekstremizm', 'manifest', 'przekaz', 'symbol', 'społeczeństwo', 'demokracja', 'radykalizm'],
@@ -59,46 +53,26 @@ class AllTexts:
 
     def analyze_texts(self):
         for text_obj in self.texts:
-            original_text = text_obj.text  # zachowujemy oryginał
-
-            for key, value in keyword_dict.items():
-                word_list_lower = [w.lower() for w in value[0]]
-
-                # Tworzymy listę wszystkich form dla regexa
+            for key, (words, weight, color) in keyword_dict.items():
                 all_forms = set()
-                for word in word_list_lower:
+                for word in words:
                     try:
-                        clp_forms = clp.forms(clp.rec(word)[0])
-                        if clp_forms:
-                            all_forms.update([w.lower() for w in clp_forms])
+                        forms = clp.forms(clp.rec(word)[0])
+                        all_forms.update(w.lower() for w in forms)
                     except Exception:
-                        all_forms.add(word)
+                        all_forms.add(word.lower())
 
-                # Kolorujemy wszystkie formy naraz
                 for form in all_forms:
                     pattern = fr'(?<!\w)({re.escape(form)})(?!\w)'
-                    if re.search(pattern, original_text, flags=re.IGNORECASE):
+                    
+                    def repl(match):
                         if key not in text_obj.categories:
                             text_obj.categories.append(key)
-                            text_obj.category_sum += value[1]
-                        original_text = re.sub(
-                            pattern,
-                            fr'<span style="background-color: {value[2]}; font-weight: bold;">\1</span>',
-                            original_text,
-                            flags=re.IGNORECASE
-                        )
-            text_obj.text = original_text
-
-    def color_text(self, word, text, color):
-        # pokolorowanie słowa w tekście, ignore case
-        text = re.sub(
-            fr'(?<!\w)({re.escape(word)})(?!\w)',
-            fr'<span style="background-color: {color}; font-weight: bold;">\1</span>',
-            text,
-            flags=re.IGNORECASE  # <-- TU dodane ignore case
-        )
-        return text
-
+                            text_obj.category_sum += weight
+                        return f'<span style="background-color: {color}; font-weight:bold;">{match.group(0)}</span>'
+                    
+                    text_obj.text = re.sub(pattern, repl, text_obj.text, flags=re.IGNORECASE)
+    
 all_texts = AllTexts(folder='teksty')
 all_texts.run()
 
