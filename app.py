@@ -52,20 +52,20 @@ class AllTexts:
                     self.texts.append(Text(f.read(), file))
 
     def analyze_texts(self):
-        for text_obj in self.texts:
-            for key, (words, weight, color) in keyword_dict.items():
+        for text_obj in self.texts: # dla każdego tekstu z korpusu
+            for key, (words, weight, color) in keyword_dict.items(): # dla każdej kategorii
                 all_forms = set()
-                for word in words:
+                for word in words: # dla każdego słowa kluczowego
                     try:
-                        forms = clp.forms(clp.rec(word)[0])
-                        all_forms.update(w.lower() for w in forms)
+                        forms = clp.forms(clp.rec(word)[0]) # pobranie wszystkich form fleksyjnych
+                        all_forms.update(w.lower() for w in forms) # dodanie form do zbioru
                     except Exception:
                         all_forms.add(word.lower())
 
-                for form in all_forms:
+                for form in all_forms: # dla każdej formy słowa kluczowego
                     pattern = fr'(?<!\w)({re.escape(form)})(?!\w)'
                     
-                    def repl(match):
+                    def repl(match): # funkcja kolorująca znalezione słowa
                         if key not in text_obj.categories:
                             text_obj.categories.append(key)
                             text_obj.category_sum += weight
