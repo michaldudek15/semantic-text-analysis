@@ -6,7 +6,7 @@
 <div class="container">
   <h2>lista tekstów</h2>
 
-  <!-- Przyciski sortowania -->
+  <!-- przyciski sortowania -->
   <div style="display: flex; gap: 15px; margin-bottom: 15px;">
     <a href="/texts?sort_by=filename&sort_order={{ 'asc' if sort_by != 'filename' or sort_order == 'desc' else 'desc' }}" class="btn">sortuj po numerze tekstu</a>
     <a href="/texts?sort_by=category_sum&sort_order={{ 'asc' if sort_by != 'category_sum' or sort_order == 'desc' else 'desc' }}" class="btn">sortuj po ocenie zgodności</a>

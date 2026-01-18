@@ -17,6 +17,8 @@ merge_map = {
     'utoi': 'utøya'
 }
 
+STOPWORDS = {"się", "być"}
+
 # liczniki
 counter_all = Counter()
 counter_first_half = Counter()   # 001-050
@@ -30,7 +32,7 @@ for filename in file_list:
         text = f.read().lower()
     
     # wszystko, co nie jest literą, spacją lub polskimi znakami diakrytycznymi lub ø (Utøya), zamieniamy na spację
-    text = re.sub(r'[^\w\sąćęłńóśżźĄĆĘŁŃÓŚŻŹøØ]', ' ', text)
+    text = re.sub(r'[^a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹøØ\s]', ' ', text)    
     
     # scalanie form fraz w jedno słowo
     for form, merged in merge_map.items():
@@ -62,10 +64,19 @@ for filename in file_list:
 def save_counter_clp(counter_obj, filename):
     with open(filename, "w", encoding="utf-8") as f:
         f.write("lp,słowo,liczba,etykieta\n")
-        for i, (word, count) in enumerate(counter_obj.most_common(), start=1):
+        i = 1
+        for word, count in counter_obj.most_common():
+            if word in STOPWORDS:
+                continue
+
             ids = clp.rec(word)
             etykieta = clp.label(ids[0]) if ids else "-"
+
+            if "G" in etykieta:
+                continue
+
             f.write(f"{i},{word},{count},{etykieta}\n")
+            i += 1
 
 # zapis do plików csv
 save_counter_clp(counter_all, "lista_frekwencyjna_clp_wszystkie.csv")

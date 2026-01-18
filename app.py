@@ -59,8 +59,8 @@ class AllTexts:
 
     def analyze_texts(self):
         for text_obj in self.texts:
-            # wszystko, co nie jest literą, spacją lub polskimi znakami diakrytycznymi lub ø (Utøya), zamieniamy na spację
-            clear_text = re.sub(r'[^\w\sąćęłńóśżźĄĆĘŁŃÓŚŻŹøØ]', ' ', text_obj.text.lower())
+            # wszystko, co nie jest literą, spacją, polskimi znakami diakrytycznymi lub ø (Utøya), zamieniamy na spację
+            clear_text = re.sub(r'[^a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹøØ\s]', ' ', text_obj.text.lower())
 
             for word in clear_text.split():
                 for key, value in keyword_dict.items():
@@ -71,7 +71,7 @@ class AllTexts:
                             word_forms = clp_forms
                     except Exception:
                         word_forms = [word]
-
+                    # value[0] - lista słów kluczowych, value[1] - waga, value[2] - kolor
                     for word_form in word_forms:
                         if word_form in value[0] or word in value[0]:
                             if key not in text_obj.categories:
