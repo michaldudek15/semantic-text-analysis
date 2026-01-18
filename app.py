@@ -97,24 +97,29 @@ def index():
 
 @app.route("/texts")
 def texts():
-    # Pobranie parametrów GET
-    sort_by = request.args.get('sort_by', 'category_sum')   # domyślnie sortujemy po ocenie zgodności
-    sort_order = request.args.get('sort_order', 'desc')     # domyślnie malejąco
+    sort_by = request.args.get('sort_by', 'category_sum')
+    sort_order = request.args.get('sort_order', 'desc')
 
-    # Tworzymy kopię listy, żeby nie nadpisywać oryginału
     texts_list = all_texts.texts.copy()
-
-    # Sortowanie
-    reverse = True if sort_order == 'desc' else False
+    reverse = sort_order == 'desc'
 
     if sort_by == 'category_sum':
         texts_list.sort(key=lambda x: x.category_sum, reverse=reverse)
     elif sort_by == 'filename':
-        # zakładam, że nazwy plików są liczbami np. "12.txt"
         texts_list.sort(key=lambda x: int(x.filename[:-4]), reverse=reverse)
 
-    # Przekazanie listy do template wraz z parametrami sortowania
-    return render_template("texts.html", texts=texts_list, sort_by=sort_by, sort_order=sort_order)
+    # 👉 mapa kolorów z keyword_dict
+    category_colors = {
+        key: value[2] for key, value in keyword_dict.items()
+    }
+
+    return render_template(
+        "texts.html",
+        texts=texts_list,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        category_colors=category_colors
+    )
 
 @app.route("/word_lists")
 def word_lists():

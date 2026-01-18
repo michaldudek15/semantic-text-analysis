@@ -29,7 +29,19 @@
         <td>{{ "{:.0%}".format(item.category_sum) }}</td>
         <td>
           {% for category in item.categories %}
-            {{ category }}<br>
+            <div
+              style="
+                background-color: {{ category_colors[category] }};
+                color: {% if category in ['Miejsce', 'Cel'] %}#000{% else %}#fff{% endif %};
+                padding: 4px 8px;
+                margin-bottom: 4px;
+                border-radius: 6px;
+                font-weight: bold;
+                display: inline-block;
+              "
+            >
+              {{ category }}
+            </div>
           {% endfor %}
         </td>
       </tr>
