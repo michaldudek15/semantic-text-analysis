@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request
 import os
+import re
 from clp3 import clp as clp
-
 
 app = Flask(__name__)
 
+# --- Słownik kategorii ---
 keyword_dict = {
     'Sprawca': (['anders', 'andersa', 'andersowi', 'andersem', 'andersie', 
                 'Anders', 'Andersa', 'Andersowi', 'Andersem', 'Andersie',
@@ -31,8 +32,8 @@ keyword_dict = {
     'Cel': (['ideologia', 'polityka', 'system', 'ekstremizm', 'manifest', 'przekaz', 'symbol', 'społeczeństwo', 'demokracja', 'radykalizm'],
             0.1, "#b7d51f"),
 }
-znaki = "`.,;~!?  "
 
+# --- Klasy reprezentujące teksty ---
 class Text:
     def __init__(self, text, filename):
         self.text = text
@@ -57,18 +58,19 @@ class AllTexts:
 
     def analyze_texts(self):
         for text_obj in self.texts:
-            clear_text = text_obj.text
-            for znak in znaki:
-                clear_text = clear_text.replace(znak, " ")
+            # --- Zamiana interpunkcji na spacje, zostawiamy polskie znaki i cyfry ---
+            clear_text = re.sub(r'[^\w\sąćęłńóśżźĄĆĘŁŃÓŚŻŹ]', ' ', text_obj.text.lower())
+
             for word in clear_text.split():
                 for key, value in keyword_dict.items():
-                    word_forms = [word.lower()]
+                    word_forms = [word]
                     try:
-                        clp_forms = clp.forms(clp.rec(word.lower())[0])
+                        clp_forms = clp.forms(clp.rec(word)[0])
                         if clp_forms:
                             word_forms = clp_forms
                     except Exception:
-                        word_forms = [word.lower()]
+                        word_forms = [word]
+
                     for word_form in word_forms:
                         if word_form in value[0] or word in value[0]:
                             if key not in text_obj.categories:
@@ -77,18 +79,19 @@ class AllTexts:
                             text_obj.text = self.color_text(word, text_obj.text, value[2])
 
     def color_text(self, word, text, color):
-        for znak in znaki:
-            replacement = f'<span style="background-color: {color}; font-weight: bold;">{word}</span>{znak}'
-            text = text.replace(word+znak, replacement)
+        # Podświetlenie słowa kolorem
+        text = re.sub(
+            fr'(?<!\w)({re.escape(word)})(?!\w)',
+            fr'<span style="background-color: {color}; font-weight: bold;">\1</span>',
+            text
+        )
         return text
 
-# Utworzenie obiektu AllTexts i analiza
+# --- Analiza wszystkich tekstów ---
 all_texts = AllTexts(folder='teksty')
 all_texts.run()
-all_texts.texts = sorted(all_texts.texts, key=lambda x: x.category_sum, reverse=True)
 
-
-# --- Twoje trasy Flask ---
+# --- Trasy Flask ---
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -106,10 +109,8 @@ def texts():
     elif sort_by == 'filename':
         texts_list.sort(key=lambda x: int(x.filename[:-4]), reverse=reverse)
 
-    # 👉 mapa kolorów z keyword_dict
-    category_colors = {
-        key: value[2] for key, value in keyword_dict.items()
-    }
+    # Mapa kolorów kategorii do template
+    category_colors = { key: value[2] for key, value in keyword_dict.items() }
 
     return render_template(
         "texts.html",
@@ -138,14 +139,16 @@ def show_words(lista_typ):
     else:
         return "Nieznany typ listy", 404
 
-    slowa = []
     import csv
     with open(filename, "r", encoding="utf-8") as f:
         slowa = list(csv.DictReader(f))
+
     return render_template("words_table.html", words=slowa, title=lista_typ)
 
+# --- Uruchomienie serwera ---
 if __name__ == "__main__":
     app.run(
         host='0.0.0.0',
         port=12221,
-        debug=True)
+        debug=True
+    )
