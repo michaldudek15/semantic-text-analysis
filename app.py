@@ -25,9 +25,9 @@ keyword_dict = {
                  'Oslo',
                  'utøya', 'utøyi', 'utøyę', 'utøyą', 'utøyo',
                  'Utøya', 'Utøyi', 'Utøyę', 'Utøyą', 'Utøyo',
-                 'utoya', 'utoyi', 'utoyę', 'utoyą', 'utoyo',
-                 'Utoya', 'Utoyi', 'Utoyę', 'Utoyą', 'Utoyo',
-                 'wyspa'],
+                 'utoya', 'utoyi', 'utoyę', 'utoyą', 'utoyo', 'utoi',
+                 'Utoya', 'Utoyi', 'Utoyę', 'Utoyą', 'Utoyo', 'Utoi',
+                 'wyspa', 'więzienie'],
                 0.2, "#04ff08"),
     'Cel': (['ideologia', 'polityka', 'system', 'ekstremizm', 'manifest', 'przekaz', 'symbol', 'społeczeństwo', 'demokracja', 'radykalizm'],
             0.1, "#b7d51f"),
@@ -59,32 +59,43 @@ class AllTexts:
 
     def analyze_texts(self):
         for text_obj in self.texts:
-            # wszystko, co nie jest literą, spacją, polskimi znakami diakrytycznymi lub ø (Utøya), zamieniamy na spację
-            clear_text = re.sub(r'[^a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹøØ\s]', ' ', text_obj.text.lower())
+            original_text = text_obj.text  # zachowujemy oryginał
 
-            for word in clear_text.split():
-                for key, value in keyword_dict.items():
-                    word_forms = [word]
+            for key, value in keyword_dict.items():
+                word_list_lower = [w.lower() for w in value[0]]
+
+                # Tworzymy listę wszystkich form dla regexa
+                all_forms = set()
+                for word in word_list_lower:
                     try:
                         clp_forms = clp.forms(clp.rec(word)[0])
                         if clp_forms:
-                            word_forms = clp_forms
+                            all_forms.update([w.lower() for w in clp_forms])
                     except Exception:
-                        word_forms = [word]
-                    # value[0] - lista słów kluczowych, value[1] - waga, value[2] - kolor
-                    for word_form in word_forms:
-                        if word_form in value[0] or word in value[0]:
-                            if key not in text_obj.categories:
-                                text_obj.categories.append(key)
-                                text_obj.category_sum += value[1]
-                            text_obj.text = self.color_text(word, text_obj.text, value[2])
+                        all_forms.add(word)
+
+                # Kolorujemy wszystkie formy naraz
+                for form in all_forms:
+                    pattern = fr'(?<!\w)({re.escape(form)})(?!\w)'
+                    if re.search(pattern, original_text, flags=re.IGNORECASE):
+                        if key not in text_obj.categories:
+                            text_obj.categories.append(key)
+                            text_obj.category_sum += value[1]
+                        original_text = re.sub(
+                            pattern,
+                            fr'<span style="background-color: {value[2]}; font-weight: bold;">\1</span>',
+                            original_text,
+                            flags=re.IGNORECASE
+                        )
+            text_obj.text = original_text
 
     def color_text(self, word, text, color):
-        # pokolorowanie słowa w tekście
+        # pokolorowanie słowa w tekście, ignore case
         text = re.sub(
             fr'(?<!\w)({re.escape(word)})(?!\w)',
             fr'<span style="background-color: {color}; font-weight: bold;">\1</span>',
-            text
+            text,
+            flags=re.IGNORECASE  # <-- TU dodane ignore case
         )
         return text
 
