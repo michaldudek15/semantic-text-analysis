@@ -26,7 +26,7 @@
       <tr>
         <td>{{ item.filename[:-4] }}</td>
         <td>{{ item.text|safe }}</td>
-        <td>{{ "{:.0%}".format(item.category_sum) }}</td>
+        <td>{{ "{:.0%}".format([item.category_sum,1]|min) }}</td>
         <td>
           {% for category in item.categories %}
             <div
