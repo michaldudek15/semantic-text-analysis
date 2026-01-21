@@ -1,5 +1,5 @@
 ## semantic text analysis (Flask + CLP)
-> This web application is a course project for the "Information Extraction" class
+> this web application is a course project for the "Information Extraction" class
 
 a lightweight Python web application for semantic analysis of text corpus, focused on the 2011 Norway attacks, carried out by Anders Behring Breivik
 
