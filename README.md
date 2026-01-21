@@ -7,10 +7,17 @@ the app highlights semantic roles directly in the text, computes topic relevance
 
 designed to work with or without the university's CLP morphological analyzer by Paweł Chrząszcz
 
+
+
 ### features
-	•	semantic role detection
-	•	color-coded highlighting in text
-	•	topic relevance scoring per document
-	•	sorting texts by relevance or filename
-	•	word frequency lists (CSV-based)
-	•	automatic fallback when CLP is unavailable
+- semantic role detection
+- color-coded highlighting in text
+- topic relevance scoring per document
+- sorting texts by relevance or filename
+- word frequency lists (CSV-based)
+- automatic fallback when CLP is unavailable
+
+### text corpus
+- 50 polish texts related to the Breivik attack
+- 50 polish texts unrelated to the topic
+- the texts were collected from the internet – I do not claim ownership, they are used for educational purposes
