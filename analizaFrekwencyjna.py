@@ -1,12 +1,40 @@
 import os
 import re
 from collections import Counter
-from clp3 import clp
+
+# próba zaimportowania CLP
+try:
+    from clp3 import clp
+    CLP_AVAILABLE = True
+except Exception:
+    clp = None
+    CLP_AVAILABLE = False
+    print("wersja bez CLP")
+
+# funkcje pomocnicze CLP
+def normalize_word(word):
+    if CLP_AVAILABLE:
+        try:
+            ids = clp.rec(word)
+            if ids:
+                return clp.bform(ids[0])
+        except Exception:
+            pass
+    return word
+
+def get_label(word):
+    if CLP_AVAILABLE:
+        try:
+            ids = clp.rec(word)
+            if ids:
+                return clp.label(ids[0])
+        except Exception:
+            pass
+    return "-"
 
 folder_path = "teksty"
 file_list = [f for f in os.listdir(folder_path) if f.endswith(".txt")]
 
-# mapa scaleń form wyspy Utøya z artykułów
 merge_map = {
     'utöya': 'utøya',
     'utoyę': 'utøya',
@@ -19,40 +47,27 @@ merge_map = {
 
 STOPWORDS = {"się", "być"}
 
-# liczniki
 counter_all = Counter()
-counter_first_half = Counter()   # 001-050
-counter_second_half = Counter()  # 051-100
+counter_first_half = Counter()
+counter_second_half = Counter()
 
 for filename in file_list:
     file_number = int(filename.replace(".txt", ""))
     file_path = os.path.join(folder_path, filename)
-    
+
     with open(file_path, "rt", encoding="utf-8") as f:
         text = f.read().lower()
-    
-    # wszystko, co nie jest literą, spacją lub polskimi znakami diakrytycznymi lub ø (Utøya), zamieniamy na spację
-    text = re.sub(r'[^a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹøØ\s]', ' ', text)    
-    
-    # scalanie form fraz w jedno słowo
+
+    text = re.sub(r'[^a-zA-ZąćęłńóśżźĄĆĘŁŃÓŚŻŹøØ\s]', ' ', text)
+
     for form, merged in merge_map.items():
         text = text.replace(form, merged)
 
     words = text.split()
-    normalized_words = []
-
-    # normalizacja słów
-    for w in words:
-        ids = clp.rec(w)
-        if ids:
-            base = clp.bform(ids[0])
-            normalized_words.append(base)
-        else:
-            normalized_words.append(w)
+    normalized_words = [normalize_word(w) for w in words]
 
     licznik = Counter(normalized_words)
 
-    # aktualizacja liczników globalnych
     for word, count in licznik.items():
         counter_all[word] += count
         if 1 <= file_number <= 50:
@@ -60,25 +75,25 @@ for filename in file_list:
         elif 51 <= file_number <= 100:
             counter_second_half[word] += count
 
-# zapis do formy csv
-def save_counter_clp(counter_obj, filename):
+
+def save_counter(counter_obj, filename):
     with open(filename, "w", encoding="utf-8") as f:
         f.write("lp,słowo,liczba,etykieta\n")
         i = 1
+
         for word, count in counter_obj.most_common():
             if word in STOPWORDS:
                 continue
 
-            ids = clp.rec(word)
-            etykieta = clp.label(ids[0]) if ids else "-"
+            label = get_label(word)
 
-            if "G" in etykieta:
+            if CLP_AVAILABLE and "G" in label:
                 continue
 
-            f.write(f"{i},{word},{count},{etykieta}\n")
+            f.write(f"{i},{word},{count},{label}\n")
             i += 1
 
-# zapis do plików csv
-save_counter_clp(counter_all, "lista_frekwencyjna_clp_wszystkie.csv")
-save_counter_clp(counter_first_half, "lista_frekwencyjna_clp_na_temat.csv")
-save_counter_clp(counter_second_half, "lista_frekwencyjna_clp_nie_na_temat.csv")
+
+save_counter(counter_all, "lista_frekwencyjna_wszystkie.csv")
+save_counter(counter_first_half, "lista_frekwencyjna_na_temat.csv")
+save_counter(counter_second_half, "lista_frekwencyjna_nie_na_temat.csv")
